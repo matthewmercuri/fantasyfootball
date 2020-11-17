@@ -12,7 +12,7 @@ PTS_DICT = {'PASSING_YDS': 0.04, 'PASSING_TD': 4,
             'RUSHING_YDS': 0.1, 'RUSHING_TD': 6, 'FUM_LOST': -2}
 
 
-class Fantasy:
+class FantasyStats:
     def __init__(self, year=YEAR):
         self.players_info_dict = scrape.Scrape.get_player_info(year)
 
@@ -28,6 +28,7 @@ class Fantasy:
         return df
 
     def _calculate_touches(self, df):
+        df['TOUCHES'] = df['RUSHING_ATT'] + df['RECEIVING_REC']
         return df
 
     def player_fantasy_log(self, player: str):
@@ -50,13 +51,13 @@ class Fantasy:
 
     def player_fantasy_summary(self, player: str):
         ''' Return a pandas df of player's condensed fantasy gamelog '''
-        summary_cols = ['DATE', 'WEEK', 'FANT_PTS']
+        summary_cols = ['DATE', 'WEEK', 'FANT_PTS', 'TOUCHES']
 
         df = self.player_fantasy_log(player)
 
         return df[summary_cols]
 
 
-Fantasy = Fantasy()
-# print(Fantasy.player_fantasy_log('DAVANTE ADAMS'))
-print(Fantasy.player_fantasy_summary('DAVANTE ADAMS'))
+# Fantasy = Fantasy()
+# # print(Fantasy.player_fantasy_log('DAVANTE ADAMS'))
+# print(Fantasy.player_fantasy_summary('DAVANTE ADAMS'))

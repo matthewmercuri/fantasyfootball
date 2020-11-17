@@ -45,7 +45,7 @@ class Cleaner:
         NEEDED_COLS = ['RUSHING_ATT', 'RUSHING_YDS', 'RUSHING_Y/A',
                        'RUSHING_TD', 'RECEIVING_TGT', 'RECEIVING_REC',
                        'RECEIVING_YDS', 'RECEIVING_Y/R', 'RECEIVING_TD',
-                       'RECEIVING_CTCH%', 'RECEIVING_Y/TGT']
+                       'RECEIVING_CTCH%', 'RECEIVING_Y/TGT', 'FUMBLES_FL']
 
         cols = df.columns
 
