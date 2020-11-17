@@ -2,3 +2,4 @@ Pipfile
 __pycache__/
 Pipfile.lock
 .vscode/
+data/

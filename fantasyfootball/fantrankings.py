@@ -15,10 +15,6 @@ class Rankings:
         self.players_info_dict = self.FantStats.players_info_dict
 
     def _add_features(self, name, df):
-        '''
-        TODO:
-        - need to add features that are relative to peers
-        '''
         data_dict = {}
 
         data_dict['L5_AVG_TOUCHES'] = df.tail(5)['TOUCHES'].mean()
@@ -57,6 +53,19 @@ class Rankings:
 
         return df
 
+    def _add_relative_features(self, df):
+        average_lastfive_touches = df['L5_AVG_TOUCHES'].mean()
+        df['EXCESS_L5_AVG_TOUCHES'] = (df['L5_AVG_TOUCHES'] -
+                                       average_lastfive_touches)
+
+        average_ss1 = df['SPECIAL_SAUCE_V1'].mean()
+        df['EXCESS_SS1'] = df['SPECIAL_SAUCE_V1'] - average_ss1
+
+        average_ss2 = df['SPECIAL_SAUCE_V2'].mean()
+        df['EXCESS_SS2'] = df['SPECIAL_SAUCE_V2'] - average_ss2
+
+        return df
+
     def full_fantasy_standings(self, position: str = None, year: int = YEAR):
         """ Returns pandas df of complete fantasy standings table """
         return scrape.Scrape.get_fantasy_standings(position, year)
@@ -86,24 +95,81 @@ class Rankings:
             print(f'{round(((i/total)*100), 2)}% complete!')
 
         rbs_df = pd.concat(rbs_dfs)
+        rbs_df = self._add_relative_features(rbs_df)
+
+        rbs_df.sort_values(by='EXCESS_SS2', ascending=False, inplace=True)
 
         return rbs_df, bad_names
 
     def wr_rankings(self):
         """ Adds features and returns wr rankings """
-        pass
+        wrs = [x for x in self.players_info_dict if
+               (self.players_info_dict[x]['POSITION'] == 'WR')]
+
+        wrs_dfs = []
+        bad_names = []
+
+        total = len(wrs)
+        i = 0
+        for wr in wrs:
+            try:
+                df = self.FantStats.player_fantasy_log(wr)
+                df = self._add_features(wr, df)
+                wrs_dfs.append(df)
+                time.sleep(2)
+            except Exception as e:
+                bad_names.append(wr)
+                print(f'Could not calculate required stats to rank {wr}.')
+                print(e)
+
+            i += 1
+            print(f'{round(((i/total)*100), 2)}% complete!')
+
+        wrs_df = pd.concat(wrs_dfs)
+        wrs_df = self._add_relative_features(wrs_df)
+
+        wrs_df.sort_values(by='EXCESS_SS2', ascending=False, inplace=True)
+
+        return wrs_df, bad_names
+
+    def te_rankings(self):
+        """ Adds features and returns te rankings """
+        tes = [x for x in self.players_info_dict if
+               (self.players_info_dict[x]['POSITION'] == 'TE')]
+
+        tes_dfs = []
+        bad_names = []
+
+        total = len(tes)
+        i = 0
+        for te in tes:
+            try:
+                df = self.FantStats.player_fantasy_log(te)
+                df = self._add_features(te, df)
+                tes_dfs.append(df)
+                time.sleep(2)
+            except Exception as e:
+                bad_names.append(te)
+                print(f'Could not calculate required stats to rank {te}.')
+                print(e)
+
+            i += 1
+            print(f'{round(((i/total)*100), 2)}% complete!')
+
+        tes_df = pd.concat(tes_dfs)
+        tes_df = self._add_relative_features(tes_df)
+
+        tes_df.sort_values(by='EXCESS_SS2', ascending=False, inplace=True)
+
+        return tes_df, bad_names
 
     def qb_rankings(self):
         """ Adds features and returns qb rankings """
         pass
 
-    def te_rankings(self):
-        """ Adds features and returns te rankings """
-        pass
-
 
 Rankings = Rankings()
 # print(Rankings.full_fantasy_standings('QB'))
-rankings, bad = Rankings.rb_rankings()
-rankings.to_csv('test.csv')
+rankings, bad = Rankings.te_rankings()
+rankings.to_csv('test3.csv')
 print(bad)
