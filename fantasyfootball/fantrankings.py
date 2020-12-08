@@ -1,8 +1,8 @@
 import pandas as pd
 import time
 
-from fantstats import FantasyStats
-from scraper import scrape
+from .fantstats import FantasyStats
+from .scraper import scrape
 
 YEAR = 2020
 SS1_REC_GAMES_BIAS = 0.5
@@ -45,6 +45,8 @@ class Rankings:
                                          SS2_REC_GAMES_BIAS) +
                                          (data_dict['L10_MED_FANTPTS'] *
                                          (1 - SS2_REC_GAMES_BIAS)))
+        data_dict['SS_MESHED'] = ((data_dict['L10_MED_FANTPTS'] * 0.66) +
+                                  (data_dict['L5_AVG_FANTPTS'] * 0.33))
 
         player_dict = {}
         player_dict[name] = data_dict
@@ -168,8 +170,8 @@ class Rankings:
         pass
 
 
-Rankings = Rankings()
-# print(Rankings.full_fantasy_standings('QB'))
-rankings, bad = Rankings.te_rankings()
-rankings.to_csv('test3.csv')
-print(bad)
+# Rankings = Rankings()
+# # print(Rankings.full_fantasy_standings('QB'))
+# rankings, bad = Rankings.te_rankings()
+# rankings.to_csv('test3.csv')
+# print(bad)
